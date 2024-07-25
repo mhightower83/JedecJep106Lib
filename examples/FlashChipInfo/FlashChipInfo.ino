@@ -18,10 +18,19 @@
 Status Works - kinda - I don't have any devices that provide SFDP data with
 optional parameters that have Product ID with Bank:MFG ID
 
+This example needs an additional library "SPI0 Flash Utilities"
+ * SpiFlashUtils https://github.com/mhightower83/SpiFlashUtils
+
+Regarding getSfdpMfgId()
+The success code path has never been tested. I do not have any Flash memory
+that implements this optional parameter data.
+
 */
 #include <Arduino.h>
-
 #include <JedecJep106Lib.h>
+#include <SpiFlashUtils.h>
+using namespace experimental;
+
 
 #ifndef ETS_PRINTF
 #define ETS_PRINTF ets_uart_printf
@@ -53,7 +62,7 @@ struct BankMsgId {
   uint32_t reserved:16;
 };
 
-BankMsgId getSfdpMfgId() {
+struct BankMsgId getSfdpMfgId() {
 
   union SFDP_Hdr {
     struct {
@@ -160,7 +169,7 @@ void setup() {
         }
       }
     } else {
-      vendor = "Invalid value (parity error)";
+      const char *vendor = "Invalid value (parity error)";
       CONSOLE_PRINTF("  %-16s 0x%02X, '%s'\n", "Manufacturer:", mfg_id, vendor);
     }
   }
